@@ -80,11 +80,17 @@ type Cell struct {
 }
 
 func (c Cell) draw() {
-	termbox.SetCell(c.x*2, c.y*2, ' ', termbox.ColorDefault, termbox.ColorYellow)
+	termbox.SetCell(c.x*4, c.y*2, ' ', termbox.ColorDefault, termbox.ColorYellow)
+	termbox.SetCell(c.x*4+1, c.y*2, ' ', termbox.ColorDefault, termbox.ColorYellow)
 	for _, pc := range c.passages {
 		xoff := pc.x - c.x
 		yoff := pc.y - c.y
-		termbox.SetCell(c.x*2+xoff, c.y*2+yoff, ' ', termbox.ColorDefault, termbox.ColorYellow)
+		termbox.SetCell(c.x*4+xoff*2, c.y*2+yoff, ' ', termbox.ColorDefault, termbox.ColorYellow)
+		if xoff == 0 {
+			termbox.SetCell(c.x*4+1, c.y*2+yoff, ' ', termbox.ColorDefault, termbox.ColorYellow)
+		} else {
+			termbox.SetCell(c.x*4+xoff*2+1, c.y*2+yoff, ' ', termbox.ColorDefault, termbox.ColorYellow)
+		}
 	}
 }
 
@@ -100,12 +106,12 @@ func main() {
 	defer termbox.Close()
 
 	w, h := termbox.Size()
-	maze := NewMaze(w/2+1, h/2+1)
+	maze := NewMaze(w/4+1, h/2+1)
 
 	go func() {
 		for {
 			maze.step()
-			time.Sleep(20 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 			maze.draw()
 			termbox.Flush()
 		}
